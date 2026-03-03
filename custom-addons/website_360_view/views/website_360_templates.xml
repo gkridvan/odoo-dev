@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+=============================================================================
+Website Templates: 360° Viewer on the Product Page
+=============================================================================
+HOW WEBSITE TEMPLATES WORK IN ODOO:
+  Odoo's website uses QWeb — an XML-based templating engine.
+  Templates are stored as ir.ui.view records, just like backend views.
+  We inherit the product page template from 'website_sale' and inject
+  our 360° viewer conditionally.
+
+KEY TEMPLATE: 'website_sale.product'
+  This is the main product detail page. We extend it to add the 360°
+  viewer above or alongside the standard image carousel.
+
+CONDITIONAL LOGIC:
+  <t t-if="product.x_360_has_content">  → show 360 viewer
+  <t t-else="">                         → normal images (already there)
+
+  This way, products without 360 content are completely unaffected.
+=============================================================================
+-->
+<odoo>
+
+    <!-- ================================================================= -->
+    <!-- Template: Inject 360° Viewer into Product Page                     -->
+    <!-- ================================================================= -->
+    <template id="product_360_viewer"
+              inherit_id="website_sale.product"
+              name="360° Product Viewer">
+        <!--
+            We target the product image container and add our viewer
+            BEFORE it. If 360 is enabled, we show the viewer and hide
+            the normal carousel. If not, everything stays as-is.
+            
+            The xpath targets the main product image area.
+        -->
+        <xpath expr="//div[@id='product_detail']//div[hasclass('css_not_available_main')]/.." position="before">
+            <t t-if="product.x_360_has_content">
+                <div class="o_360_viewer_wrapper mb-3">
+                    <!-- 
+                        The 360 viewer container.
+                        Pannellum needs a div with an ID and explicit dimensions.
+                        We pass configuration via data-* attributes — clean and
+                        no inline JS needed.
+                    -->
+                    <div id="panorama_viewer"
+                         class="o_360_panorama_container"
+                         t-att-data-auto-rotate="'true' if product.x_360_auto_rotate else 'false'"
+                         t-att-data-default-fov="product.x_360_default_fov or 100"
+                         t-att-data-scenes-json="product.x_360_scenes_json or ''"
+                         t-attf-data-image-url="#{
+                             product.x_360_image_url if product.x_360_image_url
+                             else '/web/image/product.template/%s/x_360_image' % product.id
+                         }">
+                        <!-- Loading spinner shown while Pannellum initializes -->
+                        <div class="o_360_loading text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading 360° view...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading 360° view...</p>
+                        </div>
+                    </div>
+
+                    <!-- Toggle button to switch between 360 and normal images -->
+                    <div class="text-center mt-2">
+                        <button class="btn btn-sm btn-outline-secondary o_360_toggle_btn"
+                                type="button"
+                                data-mode="360">
+                            <i class="fa fa-image me-1"/>
+                            Switch to normal images
+                        </button>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- 
+            Hide the normal image carousel when 360 is active.
+            We wrap it with a conditional class so JS can toggle visibility.
+        -->
+        <xpath expr="//div[@id='product_detail']//div[hasclass('css_not_available_main')]/.." position="attributes">
+            <attribute name="t-attf-class">
+                #{'d-none o_360_normal_images' if product.x_360_has_content else ''} #{klass if klass else ''}
+            </attribute>
+        </xpath>
+    </template>
+
+</odoo>

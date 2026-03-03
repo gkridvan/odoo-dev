@@ -1,0 +1,6 @@
+Module icon placeholder.
+
+Place a 128x128 PNG icon here.
+Odoo displays this in the Apps list.
+
+Recommended: Create a simple icon with "360°" text.

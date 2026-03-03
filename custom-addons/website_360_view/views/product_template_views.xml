@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+=============================================================================
+Backend View: Add 360° fields to the Product Template form
+=============================================================================
+HOW THIS WORKS:
+  We use <record> with inherit_id to EXTEND the existing product form.
+  The <xpath> expressions find specific locations in the parent view
+  and inject our fields there.
+
+WHY xpath?
+  It's the standard way to modify views you don't own. We never touch
+  the original view — we layer our changes on top. This means:
+  - Updates to the base module won't break our customizations
+  - Multiple modules can extend the same view without conflict
+
+RULE: Never hardcode numeric database IDs. Always reference XML IDs
+      like "product.product_template_only_form_view".
+=============================================================================
+-->
+<odoo>
+
+    <!-- ================================================================= -->
+    <!-- Extend Product Template Form View                                  -->
+    <!-- ================================================================= -->
+    <record id="product_template_form_view_360" model="ir.ui.view">
+        <field name="name">product.template.form.360</field>
+        <field name="model">product.template</field>
+        <!-- 
+            inherit_id: This MUST reference the XML ID of the view we extend.
+            'product.product_template_only_form_view' is Odoo's standard 
+            product template form. 
+        -->
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <!--
+                We add a new "360° View" page (tab) inside the existing 
+                notebook element of the product form.
+                'inside' means our <page> is appended as a child of <notebook>.
+            -->
+            <xpath expr="//notebook" position="inside">
+                <page string="360° View" name="page_360_view">
+                    <group string="360° Panorama Settings">
+                        <group>
+                            <field name="x_360_enabled" widget="boolean_toggle"/>
+                            <field name="x_360_auto_rotate"
+                                   invisible="not x_360_enabled"/>
+                            <field name="x_360_default_fov"
+                                   invisible="not x_360_enabled"/>
+                        </group>
+                        <group>
+                            <field name="x_360_image"
+                                   widget="image"
+                                   invisible="not x_360_enabled"
+                                   options="{'accepted_file_extensions': '.jpg,.jpeg,.png'}"/>
+                            <field name="x_360_image_url"
+                                   widget="url"
+                                   invisible="not x_360_enabled"
+                                   placeholder="https://example.com/panorama.jpg"/>
+                        </group>
+                    </group>
+                    <group string="Advanced: Multi-Scene Configuration"
+                           invisible="not x_360_enabled">
+                        <field name="x_360_scenes_json"
+                               widget="ace"
+                               placeholder='[{"title":"Main","image":"/url","hotSpots":[]}]'/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

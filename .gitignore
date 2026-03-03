@@ -1,0 +1,42 @@
+# =============================================================================
+# .gitignore for Odoo Project
+# =============================================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker volumes (managed by Docker, not tracked in git)
+# The named volumes in docker-compose.yml are stored by Docker,
+# not in the project folder, so they won't appear here.
+
+# Odoo filestore (if somehow created locally)
+filestore/
+
+# Logs
+*.log
+
+# Environment variables (never commit secrets!)
+.env

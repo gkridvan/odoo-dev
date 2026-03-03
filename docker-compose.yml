@@ -1,0 +1,58 @@
+# =============================================================================
+# Odoo 17 Community + PostgreSQL — Docker Compose
+# =============================================================================
+# WHY Docker?
+#   - Identical environment everywhere (your laptop, CI, Odoo.sh uses Linux)
+#   - One command to start/stop the entire stack
+#   - No pollution of your Windows system with Python deps
+#
+# Odoo.sh currently runs Odoo 17.0 Community as its latest stable branch.
+# We pin the same major version so your module is compatible.
+# =============================================================================
+
+version: "3.8"
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 15 — Odoo's database engine
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:15
+    container_name: odoo_db
+    environment:
+      POSTGRES_DB: postgres        # default database (Odoo creates its own)
+      POSTGRES_USER: odoo          # must match odoo.conf
+      POSTGRES_PASSWORD: odoo      # must match odoo.conf
+    ports:
+      - "5432:5432"                # expose DB if you want to inspect with pgAdmin
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data   # persist data across restarts
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Odoo 17 Community
+  # ---------------------------------------------------------------------------
+  web:
+    image: odoo:17.0
+    container_name: odoo_web
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"     # main web interface
+      - "8072:8072"     # live-chat / longpolling
+    volumes:
+      # Mount your custom addons INTO the container
+      # This is the key — you edit files on Windows, Odoo reads them in Linux
+      - ./custom-addons:/mnt/extra-addons
+
+      # Mount a custom config file
+      - ./config/odoo.conf:/etc/odoo/odoo.conf
+
+      # Persist Odoo filestore (uploaded images, attachments)
+      - odoo-web-data:/var/lib/odoo
+    restart: unless-stopped
+
+# Named volumes — Docker manages these on disk
+volumes:
+  odoo-db-data:
+  odoo-web-data:
