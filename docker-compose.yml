@@ -10,8 +10,6 @@
 # We pin the same major version so your module is compatible.
 # =============================================================================
 
-version: "3.8"
-
 services:
   # ---------------------------------------------------------------------------
   # PostgreSQL 15 — Odoo's database engine

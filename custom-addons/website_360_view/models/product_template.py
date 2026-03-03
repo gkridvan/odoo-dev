@@ -83,14 +83,14 @@ class ProductTemplate(models.Model):
     # -------------------------------------------------------------------------
     # Computed methods
     # -------------------------------------------------------------------------
-    @api.depends("x_360_enabled", "x_360_image", "x_360_image_url")
+    @api.depends("x_360_enabled", "x_360_image", "x_360_image_url", "x_360_scenes_json")
     def _compute_360_has_content(self):
         """
-        Returns True if 360 is enabled AND we have an image or URL.
+        Returns True if 360 is enabled AND we have an image, URL, or scenes JSON.
         Used in website templates to decide which viewer to show.
         """
         for record in self:
             record.x_360_has_content = (
                 record.x_360_enabled
-                and (record.x_360_image or record.x_360_image_url)
+                and (record.x_360_image or record.x_360_image_url or record.x_360_scenes_json)
             )

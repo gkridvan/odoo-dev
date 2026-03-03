@@ -29,21 +29,13 @@ CONDITIONAL LOGIC:
               inherit_id="website_sale.product"
               name="360° Product Viewer">
         <!--
-            We target the product image container and add our viewer
-            BEFORE it. If 360 is enabled, we show the viewer and hide
-            the normal carousel. If not, everything stays as-is.
-            
-            The xpath targets the main product image area.
+            Target: the shop_product_images call inside the image column.
+            We add our 360° viewer BEFORE the standard image carousel call.
+            The t-call element is a reliable, unique xpath target.
         -->
-        <xpath expr="//div[@id='product_detail']//div[hasclass('css_not_available_main')]/.." position="before">
+        <xpath expr="//t[@t-call='website_sale.shop_product_images']" position="before">
             <t t-if="product.x_360_has_content">
                 <div class="o_360_viewer_wrapper mb-3">
-                    <!-- 
-                        The 360 viewer container.
-                        Pannellum needs a div with an ID and explicit dimensions.
-                        We pass configuration via data-* attributes — clean and
-                        no inline JS needed.
-                    -->
                     <div id="panorama_viewer"
                          class="o_360_panorama_container"
                          t-att-data-auto-rotate="'true' if product.x_360_auto_rotate else 'false'"
@@ -53,7 +45,6 @@ CONDITIONAL LOGIC:
                              product.x_360_image_url if product.x_360_image_url
                              else '/web/image/product.template/%s/x_360_image' % product.id
                          }">
-                        <!-- Loading spinner shown while Pannellum initializes -->
                         <div class="o_360_loading text-center py-5">
                             <div class="spinner-border text-primary" role="status">
                                 <span class="visually-hidden">Loading 360° view...</span>
@@ -61,8 +52,6 @@ CONDITIONAL LOGIC:
                             <p class="mt-2 text-muted">Loading 360° view...</p>
                         </div>
                     </div>
-
-                    <!-- Toggle button to switch between 360 and normal images -->
                     <div class="text-center mt-2">
                         <button class="btn btn-sm btn-outline-secondary o_360_toggle_btn"
                                 type="button"
@@ -75,14 +64,12 @@ CONDITIONAL LOGIC:
             </t>
         </xpath>
 
-        <!-- 
-            Hide the normal image carousel when 360 is active.
-            We wrap it with a conditional class so JS can toggle visibility.
+        <!--
+            Hide the standard product images carousel when 360 is active.
+            We wrap the t-call in a conditional div that JS can toggle.
         -->
-        <xpath expr="//div[@id='product_detail']//div[hasclass('css_not_available_main')]/.." position="attributes">
-            <attribute name="t-attf-class">
-                #{'d-none o_360_normal_images' if product.x_360_has_content else ''} #{klass if klass else ''}
-            </attribute>
+        <xpath expr="//t[@t-call='website_sale.shop_product_images']" position="attributes">
+            <attribute name="t-if">not product.x_360_has_content</attribute>
         </xpath>
     </template>
 

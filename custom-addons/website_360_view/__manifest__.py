@@ -65,10 +65,8 @@
     # We add Pannellum (open-source panorama viewer) and our custom JS/CSS.
     "assets": {
         "web.assets_frontend": [
-            # Pannellum library (CDN loaded via template, but local fallback here)
-            "website_360_view/static/src/lib/pannellum/pannellum.css",
-            "website_360_view/static/src/lib/pannellum/pannellum.js",
-            # Our custom code
+            # Our custom code only — Pannellum is loaded via <script> tag
+            # in the template to ensure window.pannellum global is available.
             "website_360_view/static/src/css/website_360_view.css",
             "website_360_view/static/src/js/website_360_viewer.js",
         ],
