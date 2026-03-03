@@ -45,9 +45,9 @@ publicWidget.registry.Website360Viewer = publicWidget.Widget.extend({
     },
 
     // -------------------------------------------------------------------------
-    // Protect viewer from Odoo — stop events from bubbling UP past wrapper
-    // so Odoo's handlers on parent elements don't interfere.
-    // Events INSIDE the wrapper (Pannellum's own) are untouched.
+    // Protect viewer from Odoo — stop events from bubbling UP past wrapper.
+    // IMPORTANT: mousemove/mouseup must NOT be stopped here because Pannellum
+    // registers document-level listeners for drag that need those events!
     // -------------------------------------------------------------------------
     _protectFromOdoo: function () {
         var wrapper = this.el;
@@ -56,19 +56,18 @@ publicWidget.registry.Website360Viewer = publicWidget.Widget.extend({
         wrapper.setAttribute("contenteditable", "false");
         wrapper.classList.add("o_not_editable");
 
-        // Stop events from bubbling to Odoo's parent handlers
-        // Use BUBBLE phase (not capture) so Pannellum handles them first
+        // Only stop propagation for events Odoo might hijack at parent level.
+        // DO NOT include mousemove/mouseup/pointermove/pointerup — Pannellum
+        // needs these to bubble all the way to document for drag to work.
         var eventNames = [
-            "mousedown", "mousemove", "mouseup", "click", "dblclick",
-            "touchstart", "touchmove", "touchend",
-            "pointerdown", "pointermove", "pointerup",
-            "wheel", "contextmenu"
+            "click", "dblclick",
+            "wheel", "contextmenu",
         ];
 
         eventNames.forEach(function (name) {
             wrapper.addEventListener(name, function (e) {
                 e.stopPropagation();
-            }, false);  // false = BUBBLE phase, Pannellum gets events first
+            }, false);
         });
 
         console.log("[360 View] Protected wrapper from Odoo event bubbling.");
@@ -193,10 +192,17 @@ publicWidget.registry.Website360Viewer = publicWidget.Widget.extend({
                     type: "equirectangular",
                     panorama: s.image || s.panorama || "",
                     hotSpots: (s.hotSpots || []).map(function (h) {
+                        // Auto-detect type: scene transition or URL link or info
+                        var type = h.type;
+                        if (!type) {
+                            if (h.sceneId) type = "scene";
+                            else if (h.url) type = "url";
+                            else type = "info";
+                        }
                         return {
                             pitch: h.pitch || 0,
                             yaw: h.yaw || 0,
-                            type: h.type || "info",
+                            type: type,
                             text: h.text || "",
                             sceneId: h.sceneId || undefined,
                             URL: h.url || undefined,
