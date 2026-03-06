@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List view -->
+    <record id="view_360_tour_list" model="ir.ui.view">
+        <field name="name">website.360.tour.list</field>
+        <field name="model">website.360.tour</field>
+        <field name="arch" type="xml">
+            <tree string="Tours 360°">
+                <field name="name" string="Dossier (static/src/tours/)"/>
+                <field name="display_name_custom" string="Libellé"/>
+                <field name="product_ids" widget="many2many_tags" string="Produits"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="view_360_tour_form" model="ir.ui.view">
+        <field name="name">website.360.tour.form</field>
+        <field name="model">website.360.tour</field>
+        <field name="arch" type="xml">
+            <form string="Tour 360°">
+                <sheet>
+                    <group>
+                        <group string="Identification">
+                            <field name="name"
+                                   string="Nom du dossier"
+                                   placeholder="ex: project-title"
+                                   help="Dossier exact sous static/src/tours/"/>
+                            <field name="display_name_custom"
+                                   string="Libellé affiché"
+                                   placeholder="ex: Cabinet Client 1"/>
+                        </group>
+                    </group>
+                    <group string="Produits utilisant ce tour">
+                        <field name="product_ids"
+                               widget="many2many_tags"
+                               string=""
+                               readonly="1"/>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Marche à suivre :</strong>
+                        <ol class="mb-0 mt-1">
+                            <li>Créez votre tour avec <strong>Marzipano Tool</strong> et exportez-le.</li>
+                            <li>Copiez le dossier <code>app-files/</code> exporté dans
+                                <code>static/src/tours/<em>nom-du-dossier</em>/</code> du module.</li>
+                            <li>Renseignez le <strong>Nom du dossier</strong> ci-dessus (exactement le même nom).</li>
+                            <li>Sur la fiche produit → onglet <em>Visite 360°</em> → sélectionnez ce tour.</li>
+                        </ol>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window action -->
+    <record id="action_360_tour" model="ir.actions.act_window">
+        <field name="name">Tours 360°</field>
+        <field name="res_model">website.360.tour</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu: Website > Configuration > Tours 360° -->
+    <menuitem id="menu_360_tour"
+              name="Tours 360°"
+              parent="website.menu_website_configuration"
+              action="action_360_tour"
+              sequence="50"/>
+
+</odoo>

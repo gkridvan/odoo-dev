@@ -40,3 +40,23 @@ filestore/
 
 # Environment variables (never commit secrets!)
 .env
+
+# =============================================================================
+# Marzipano 360 tours - tiles (images tuiles volumineuses, gérées hors git)
+# Les fichiers index.html, data.js, vendor/ sont trackés (code)
+# Les tiles/ (images JPG/PNG pyramidales) sont à gérer via Git LFS ou externalisées
+# =============================================================================
+custom-addons/website_360_view/static/src/tours/*/tiles/
+
+# Scripts de debug temporaires (racine du projet)
+debug_360.py
+fix_360_template.py
+check_360.py
+check_dims.py
+find_panoramas.py
+fix_reunion.py
+setup_360_local.py
+
+# ML Analysis - environnement virtuel Python
+ml-analysis/venv/
+ml-analysis/.venv/

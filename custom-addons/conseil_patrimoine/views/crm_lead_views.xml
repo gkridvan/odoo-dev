@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- CRM Lead Form — smart buttons Vue 360° + onglet Profil Patrimoine -->
+    <record id="crm_lead_patrimoine_form" model="ir.ui.view">
+        <field name="name">crm.lead.patrimoine.form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Smart buttons Vue 360° -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_devis_360"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o">
+                    <field name="x_count_devis" widget="statinfo"
+                           string="Devis"/>
+                </button>
+                <button name="action_view_factures_360"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-eur">
+                    <field name="x_count_factures" widget="statinfo"
+                           string="Factures"/>
+                </button>
+            </xpath>
+
+            <!-- Onglet Profil Patrimoine + Vue 360° -->
+            <xpath expr="//notebook" position="inside">
+                <page string="🏦 Profil Patrimoine" name="patrimoine_tab">
+
+                    <group string="Situation personnelle" col="2">
+                        <group>
+                            <field name="x_situation_familiale"/>
+                            <field name="x_situation_professionnelle"/>
+                        </group>
+                        <group>
+                            <field name="x_patrimoine_type"/>
+                            <field name="x_objectif_principal"/>
+                        </group>
+                    </group>
+
+                    <group string="Données financières" col="2">
+                        <group>
+                            <field name="x_revenu_annuel_brut"/>
+                            <field name="x_actifs_estimes"/>
+                        </group>
+                        <group>
+                            <field name="x_horizon_investissement"/>
+                            <field name="x_niveau_risque"/>
+                        </group>
+                    </group>
+
+                    <group string="Suivi commercial" col="2">
+                        <group>
+                            <field name="x_segment"/>
+                            <field name="x_premier_contact"/>
+                            <field name="x_date_premier_rdv"/>
+                        </group>
+                    </group>
+
+                    <group string="Notes d'analyse">
+                        <field name="x_notes_analyse" nolabel="1" colspan="2"/>
+                    </group>
+
+                </page>
+
+                <!-- Vue 360° Client -->
+                <page string="📊 Vue 360° Client" name="vue_360">
+
+                    <group string="Synthèse financière" col="2">
+                        <group>
+                            <field name="x_revenu_annuel_brut" readonly="1"/>
+                            <field name="x_actifs_estimes" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="x_montant_devis"
+                                   string="📋 Devis en cours (€)"
+                                   readonly="1"/>
+                            <field name="x_montant_facture"
+                                   string="✅ CA facturé (€)"
+                                   readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Activité commerciale" col="2">
+                        <group>
+                            <field name="x_count_devis"
+                                   string="Nombre de devis"
+                                   readonly="1"/>
+                            <field name="x_count_factures"
+                                   string="Nombre de factures"
+                                   readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="x_segment" readonly="1"/>
+                            <field name="x_premier_contact" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Profil investisseur" col="2">
+                        <group>
+                            <field name="x_patrimoine_type" readonly="1"/>
+                            <field name="x_horizon_investissement" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="x_niveau_risque" readonly="1"/>
+                            <field name="x_situation_professionnelle" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Objectif client">
+                        <field name="x_objectif_principal" nolabel="1"
+                               colspan="2" readonly="1"/>
+                    </group>
+
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Liste opportunités — colonnes patrimoine -->
+    <record id="crm_lead_patrimoine_list" model="ir.ui.view">
+        <field name="name">crm.lead.patrimoine.list</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <field name="expected_revenue" position="after">
+                <field name="x_patrimoine_type" optional="show" string="Besoin"/>
+                <field name="x_segment" optional="show" string="Segment"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Filtres de recherche patrimoniaux -->
+    <record id="crm_lead_patrimoine_search" model="ir.ui.view">
+        <field name="name">crm.lead.patrimoine.search</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <filter string="Retraite" name="retraite" domain="[('x_patrimoine_type','=','retraite')]"/>
+                <filter string="Assurance Vie" name="assurance_vie" domain="[('x_patrimoine_type','=','assurance_vie')]"/>
+                <filter string="Immobilier" name="immobilier" domain="[('x_patrimoine_type','=','immobilier')]"/>
+                <filter string="Fiscalité" name="fiscalite" domain="[('x_patrimoine_type','=','fiscalite')]"/>
+                <filter string="Transmission" name="transmission" domain="[('x_patrimoine_type','=','transmission')]"/>
+                <separator/>
+                <filter string="⭐ VIP" name="vip" domain="[('x_segment','=','vip')]"/>
+                <separator/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Type de besoin" name="group_type" context="{'group_by': 'x_patrimoine_type'}"/>
+                    <filter string="Segment" name="group_segment" context="{'group_by': 'x_segment'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

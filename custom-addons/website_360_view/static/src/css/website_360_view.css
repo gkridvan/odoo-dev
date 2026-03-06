@@ -1,100 +1,28 @@
-/* =============================================================================
- * website_360_view.css — Styles for the 360° Panorama Viewer
- * =============================================================================
- * IMPORTANT RULES:
- *   - All classes prefixed with 'o_360_' to avoid conflicts with themes
- *   - Use relative units (rem, %) for responsiveness
- *   - Never override core Odoo/Bootstrap classes directly
- *   - Keep specificity low — use single class selectors where possible
- * ============================================================================= */
+/* ============================================================
+ * website_360_view.css  Marzipano iframe viewer styles
+ * ============================================================ */
 
-/* --- Main viewer container --- */
-.o_360_panorama_container {
+.o_marzipano_iframe_wrapper {
+    position: relative;
     width: 100%;
-    height: 450px;
-    min-height: 300px;
-    max-height: 70vh;
     border-radius: 0.5rem;
     overflow: hidden;
-    position: relative;
-    background-color: #1a1a2e;
     border: 1px solid #dee2e6;
+    background: #1a1a2e;
+    /* 16:9 aspect ratio */
+    aspect-ratio: 16 / 9;
 }
 
-/* --- Responsive adjustments --- */
+.o_marzipano_iframe_wrapper iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
 @media (max-width: 768px) {
-    .o_360_panorama_container {
-        height: 300px;
-        min-height: 200px;
+    .o_marzipano_iframe_wrapper {
+        aspect-ratio: 4 / 3;
     }
-}
-
-@media (max-width: 480px) {
-    .o_360_panorama_container {
-        height: 250px;
-        min-height: 180px;
-    }
-}
-
-/* --- Wrapper that holds viewer + toggle button --- */
-.o_360_viewer_wrapper {
-    position: relative;
-}
-
-/* --- Loading spinner overlay --- */
-.o_360_loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    color: #ffffff;
-}
-
-.o_360_loading .spinner-border {
-    width: 3rem;
-    height: 3rem;
-}
-
-.o_360_loading p {
-    color: #cccccc !important;
-    font-size: 0.875rem;
-}
-
-/* --- Toggle button between 360 and normal images --- */
-.o_360_toggle_btn {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.75rem;
-    transition: all 0.2s ease;
-}
-
-.o_360_toggle_btn:hover {
-    background-color: #6c757d;
-    color: #ffffff;
-    border-color: #6c757d;
-}
-
-/* --- Pannellum: ensure container works inside Odoo --- */
-.o_360_panorama_container .pnlm-container {
-    border-radius: inherit;
-    touch-action: none;
-}
-
-/* --- Error state --- */
-.o_360_panorama_container .alert {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 250px;
-}
-
-/* --- Hotspot custom styling --- */
-.o_360_panorama_container .pnlm-hotspot-base {
-    cursor: pointer;
-}
-
-.o_360_panorama_container .pnlm-hotspot-base:hover .pnlm-tooltip {
-    opacity: 1;
-    visibility: visible;
 }

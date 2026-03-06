@@ -1,76 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-=============================================================================
-Website Templates: 360° Viewer on the Product Page
-=============================================================================
-HOW WEBSITE TEMPLATES WORK IN ODOO:
-  Odoo's website uses QWeb — an XML-based templating engine.
-  Templates are stored as ir.ui.view records, just like backend views.
-  We inherit the product page template from 'website_sale' and inject
-  our 360° viewer conditionally.
-
-KEY TEMPLATE: 'website_sale.product'
-  This is the main product detail page. We extend it to add the 360°
-  viewer above or alongside the standard image carousel.
-
-CONDITIONAL LOGIC:
-  <t t-if="product.x_360_has_content">  → show 360 viewer
-  <t t-else="">                         → normal images (already there)
-
-  This way, products without 360 content are completely unaffected.
-=============================================================================
--->
 <odoo>
-
-    <!-- ================================================================= -->
-    <!-- Template: Inject 360° Viewer into Product Page                     -->
-    <!-- ================================================================= -->
     <template id="product_360_viewer"
               inherit_id="website_sale.product"
-              name="360° Product Viewer">
-        <!--
-            Target: the shop_product_images call inside the image column.
-            We add our 360° viewer BEFORE the standard image carousel call.
-            The t-call element is a reliable, unique xpath target.
-        -->
-        <xpath expr="//t[@t-call='website_sale.shop_product_images']" position="before">
-            <t t-if="product.x_360_has_content">
-                <div class="o_360_viewer_wrapper mb-3">
-                    <div id="panorama_viewer"
-                         class="o_360_panorama_container"
-                         t-att-data-auto-rotate="'true' if product.x_360_auto_rotate else 'false'"
-                         t-att-data-default-fov="product.x_360_default_fov or 100"
-                         t-att-data-scenes-json="product.x_360_scenes_json or ''"
-                         t-attf-data-image-url="#{
-                             product.x_360_image_url if product.x_360_image_url
-                             else '/web/image/product.template/%s/x_360_image' % product.id
-                         }">
-                        <div class="o_360_loading text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading 360° view...</span>
-                            </div>
-                            <p class="mt-2 text-muted">Loading 360° view...</p>
-                        </div>
-                    </div>
-                    <div class="text-center mt-2">
-                        <button class="btn btn-sm btn-outline-secondary o_360_toggle_btn"
-                                type="button"
-                                data-mode="360">
-                            <i class="fa fa-image me-1"/>
-                            Switch to normal images
-                        </button>
-                    </div>
+              name="360 Product Viewer">
+
+        <xpath expr="//div[@id='product_detail_main']" position="before">
+            <t t-if="product.x_marzipano_enabled and product.x_marzipano_tour_id">
+                <div class="o_marzipano_iframe_wrapper mb-3">
+                    <iframe
+                        t-attf-src="/website_360_view/static/src/tours/#{product.x_marzipano_tour_id.name}/index.html"
+                        allowfullscreen="1"
+                        frameborder="0"/>
                 </div>
             </t>
         </xpath>
 
-        <!--
-            Hide the standard product images carousel when 360 is active.
-            We wrap the t-call in a conditional div that JS can toggle.
-        -->
-        <xpath expr="//t[@t-call='website_sale.shop_product_images']" position="attributes">
-            <attribute name="t-if">not product.x_360_has_content</attribute>
-        </xpath>
     </template>
-
 </odoo>

@@ -1,1 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_360_tour_manager,website.360.tour manager,model_website_360_tour,website.group_website_designer,1,1,1,1
+access_360_tour_user,website.360.tour user,model_website_360_tour,base.group_user,1,0,0,0
